@@ -11,7 +11,6 @@ public class Client {
 
   static ReceivingThread RT; // Thread qui va permettre de recevoir les messages
   static SendingThread ST; // Thread qui va permettre d'envoyer des messages
-  static boolean waitForHistory; //Booléen qui permet de savoir si on a reçu l'historique
 
   // Méthodes 
 

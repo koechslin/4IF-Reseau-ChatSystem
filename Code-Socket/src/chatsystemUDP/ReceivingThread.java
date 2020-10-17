@@ -9,7 +9,7 @@ public class ReceivingThread extends Thread {
 	InetAddress groupIP;
 	int port;
 	MulticastSocket socket;
-	boolean historyOk;
+	boolean historyOk; // Booléen qui permet de savoir si on a reçu l'historique
 
 	/**
     * interrupt method
@@ -34,7 +34,7 @@ public class ReceivingThread extends Thread {
 	ReceivingThread(InetAddress groupIP, int port) {
 		this.groupIP = groupIP;
 		this.port = port;
-		historyOk=false;
+		historyOk = false;
 		try {
 			this.socket = new MulticastSocket(port);
 			this.socket.joinGroup(groupIP);
@@ -58,20 +58,20 @@ public class ReceivingThread extends Thread {
 				String msg = new String(msgRecv.getData(), "UTF-8");
 				msg = msg.replaceAll("\u0000.*", ""); // enlève les caractères null
 
-				String typeMessage=msg.substring(msg.length()-1);//identifie le type de message
-				msg=msg.substring(0, msg.length()-1);
+				String typeMessage = msg.substring(msg.length()-1); //identifie le type de message
+				msg = msg.substring(0, msg.length()-1);
 
-				if(typeMessage.equals("1") && historyOk==true){
+				if(typeMessage.equals("1") && historyOk == true) {
 					//message normal reçu
 					System.out.println(msg);
 				}
 
-				if(typeMessage.equals("3") && historyOk==false){
-					//hitorique reçu
+				if(typeMessage.equals("3") && historyOk == false){
+					// hitorique reçu
 					if(!msg.equals("")){
 						System.out.println(msg);
 					}
-					historyOk=true;
+					historyOk = true;
 				}
 
 			} catch (Exception e) {

@@ -49,25 +49,24 @@ public class SendingThread extends Thread {
 	* and send it to the group
   	**/
 	public void run() {
-
         //Code spécial de message afin de demander au serveur l'historique
-        String getHistoryMsg="2";
+        String getHistoryMsg = "2";
         DatagramPacket msg = new DatagramPacket(getHistoryMsg.getBytes(), getHistoryMsg.length(), this.groupIP, this.port);
         try{
             this.socket.send(msg);
         }
         catch (Exception e) {
             System.out.println("Interrompu.");
-            return; 
+            return;
         }
 
-        //start reading the console
+        // start reading the console
         while(true) {
             try {
                 String line = stdIn.readLine();
                 if (line.equals(".")) break;
                 line = this.pseudo + " dit : " + line;
-                line=line+"1"; //message normal envoyé
+                line = line + "1"; //message normal envoyé
                 msg = new DatagramPacket(line.getBytes(), line.length(), this.groupIP, this.port);
                 this.socket.send(msg);
             } catch (Exception e) {
