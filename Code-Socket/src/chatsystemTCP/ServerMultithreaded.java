@@ -4,6 +4,7 @@ import java.io.*;
 import java.net.*;
 
 import java.util.List;
+import java.util.Scanner;
 import java.util.ArrayList;
 
 public  class ServerMultithreaded {
@@ -12,8 +13,10 @@ public  class ServerMultithreaded {
 	static ServerSocket listenSocket;
 	static List<ClientThread> clientsConnected;
 	static List<Message> historiqueMsg;
+	static File fMsg;
+	static FileWriter fWriter;
 
-	// Méthodes 
+	// Méthodes
 
 	/**
 	 * main method
@@ -21,16 +24,37 @@ public  class ServerMultithreaded {
 	* and launch the ClientThread when a client 
 	* connects to the server
 	* @param Server port
+	* @param Messages file
 	**/
     public static void main(String args[]){        
-  		if (args.length != 1) {
-        	System.out.println("Usage: java ServerMultithreaded <Server port>");
+  		if (args.length != 2) {
+        	System.out.println("Usage: java ServerMultithreaded <Server port> <Messages file>");
         	System.exit(1);
-  		}
+		}
+		historiqueMsg = new ArrayList<Message>();
+		fMsg = new File(args[1]);
+		try {
+			if(fMsg.exists()) {
+				// lire le fichier
+				Scanner fReader = new Scanner(fMsg);
+				while(fReader.hasNext()) {
+					String line = fReader.nextLine();
+					String[] lineSplit = line.split("\\|");
+					Message msgFile = new Message(lineSplit[0], lineSplit[1], 2);
+					historiqueMsg.add(msgFile);
+				}
+				fReader.close();
+			}
+			else {
+				fMsg.createNewFile();
+			}
+			fWriter = new FileWriter(fMsg.getAbsolutePath(), true);
+		} catch (Exception e) {
+			System.out.println("Error when opening/creating file : " + e);
+		}
 		try {
 			listenSocket = new ServerSocket(Integer.parseInt(args[0])); //port
 			clientsConnected = new ArrayList<ClientThread>();
-			historiqueMsg=new ArrayList<Message>();
 			System.out.println("Server is ready !");
 
 			while (true) {
@@ -55,8 +79,18 @@ public  class ServerMultithreaded {
 	* @param msg the message to redistribute to all the clients
 	**/
 	public static synchronized void sendMessagesToClient(Message msg) {
-		if(msg.getType() != 1) historiqueMsg.add(msg); // message qui n'est pas de type information
 
+		if(msg.getType() != 1) {
+			// message qui n'est pas de type information
+			historiqueMsg.add(msg);
+			try {
+				fWriter.append(msg.getContent() + "|" + msg.getPseudo() + "\n");
+				fWriter.flush();
+			} catch (Exception e) {
+				System.out.println("Error when writing to file : " + e);
+			}
+		}
+		
 		for(ClientThread c: clientsConnected){
 			try {
 				c.getObjectOutputStream().writeObject(msg);
