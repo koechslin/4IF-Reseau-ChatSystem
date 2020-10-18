@@ -3,67 +3,63 @@ package chatsystemTCP;
 import java.io.*;
 import java.net.*;
 import chatsystemTCP.Message;
-import chatsystemTCP.ClientSendingThread;
 import chatsystemTCP.ClientReceivingThread;
+import chatsystemIHM.Window;
 
 public class Client {
   
   // Variables globales de Client
-  static Socket socket;
-  static ObjectOutputStream socOut;
-  static ObjectInputStream socIn;
-  static BufferedReader stdIn;
-  static ClientSendingThread ST; // Thread qui va permettre de lire ce que l'utilisateur tape
-  static ClientReceivingThread RT; // Thread qui va permettre de recevoir les messages du serveur
-  static String pseudo;
+  private Socket socket;
+  private ObjectOutputStream socOut;
+  private ObjectInputStream socIn;
+  private ClientReceivingThread RT; // Thread qui va permettre de recevoir les messages du serveur
+  private String pseudo;
+  private boolean isConnected = false;
 
-  // Méthodes 
+  // Méthodes
+
+  public void connect(String host, int port, String pseudo, Window window) throws UnknownHostException, IOException {
+    this.pseudo = pseudo;
+    this.socket = new Socket(host, port);
+    this.socOut = new ObjectOutputStream(this.socket.getOutputStream());
+    this.socIn = new ObjectInputStream(this.socket.getInputStream());
+    this.RT = new ClientReceivingThread(this.socIn, window);
+    
+    // message d'information de connexion
+		Message msgInit = new Message(this.pseudo + " vient de se connecter au chat.", "Serveur", 1);
+		try {
+			Thread.sleep(70);
+			this.socOut.writeObject(msgInit);
+		} catch (Exception e) {
+			System.err.println("Error when sending init message : " + e);
+    }
+    
+    this.isConnected = true;
+  }
+
+  public void sendMsg(String content) throws IOException {
+		Message msg = new Message(content, this.pseudo, 2);
+		this.socOut.writeObject(msg);
+	}
 
   /**
   * disconnect method
   * Interrupt the reading and writing threads and close the socket
   **/
-  public static void disconnect() {
-    try {
-      ST.interrupt();
-      RT.interrupt();
-      socOut.close();
-      socIn.close();
-      stdIn.close();
-      socket.close();
-    } catch (Exception e) {
-      System.out.println("Error when disconnecting : " + e);
-    }
+  public void disconnect() throws Exception {
+    this.RT.interrupt();
+    this.socOut.close();
+    this.socIn.close();
+    this.socket.close();
+    this.isConnected = false;
   }
- 
-  /**
-  * main method
-  * Connect the client to the server, open the input and output streams
-  * and launch the reading and writing threads
-  **/
-  public static void main(String[] args) throws IOException {
-    if (args.length != 3) {
-      System.out.println("Usage: java Client <Server host> <Server port> <pseudo>");
-      System.exit(1);
-    }
-    try {
-        pseudo = args[2];
-        socket = new Socket(args[0],new Integer(args[1]).intValue()); // création socket => connexion
-        socIn = new ObjectInputStream(socket.getInputStream());
-        socOut = new ObjectOutputStream(socket.getOutputStream());
-        stdIn = new BufferedReader(new InputStreamReader(System.in));
-        
-        ST = new ClientSendingThread(stdIn, socOut, pseudo);
-        RT = new ClientReceivingThread(socIn);
-        ST.start();
-        RT.start();
-    } catch (UnknownHostException e) {
-      System.err.println("Don't know about host:" + args[0]);
-      System.exit(1);
-    } catch (IOException e) {
-      System.err.println("Couldn't get I/O for the connection to:"+ args[0]);
-      System.exit(1);
-    }
+
+  public ClientReceivingThread getClientReceivingThread() {
+    return this.RT;
+  }
+
+  public boolean getIsConnected() {
+    return this.isConnected;
   }
 }
 

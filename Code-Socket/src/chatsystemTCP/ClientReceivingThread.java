@@ -3,18 +3,22 @@ package chatsystemTCP;
 import java.io.*;
 import java.net.*;
 import chatsystemTCP.Message;
+import chatsystemIHM.Window;
 
 public class ClientReceivingThread extends Thread {
 
 	// Attribut du thread client de réception
 	private ObjectInputStream  socIn;
+	private Window window;
 	
 	/**
 	* constructor
 	* @param in the input object stream
   	**/
-	ClientReceivingThread(ObjectInputStream in) {
+	ClientReceivingThread(ObjectInputStream in, Window window) {
 		this.socIn = in;
+		this.window = window;
+		this.start();
 	}
 
 	/**
@@ -26,13 +30,7 @@ public class ClientReceivingThread extends Thread {
 		try{
 			while(true){
 				Message msgReceived = (Message) socIn.readObject();
-				if (msgReceived.getType() == 1) {
-					// Message de type information
-					System.out.println(msgReceived.getContent());
-				} else {
-					// Message normal
-					System.out.println(msgReceived.getPseudo() + " dit : " + msgReceived.getContent());
-				}
+				this.window.receiveMsg(msgReceived);
 			}
 		}
 		catch(ClassNotFoundException e){

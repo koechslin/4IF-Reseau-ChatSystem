@@ -64,6 +64,8 @@ public  class ServerMultithreaded {
 				addClientConnected(ct);
 				ct.start();
 
+				Thread.sleep(50);
+
 				for(Message m : historiqueMsg) {
 					// Envoie l'historique des messages au client qui vient de se connecter
 					ct.getObjectOutputStream().writeObject(m);
@@ -94,6 +96,10 @@ public  class ServerMultithreaded {
 		for(ClientThread c: clientsConnected){
 			try {
 				c.getObjectOutputStream().writeObject(msg);
+			}
+			catch (SocketException e) {
+				// un client a été fermé sans se déconnecter
+				removeClientConnected(c);
 			}
 			catch (Exception e) {
 				System.err.println("Error with the server when redistributing the message : " + msg + " to all the clients : " + e);

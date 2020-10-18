@@ -62,7 +62,8 @@ public class ClientThread extends Thread {
     			Message msg = (Message)socIn.readObject();
 				ServerMultithreaded.sendMessagesToClient(msg);
     		}
-		} catch (EOFException e) {
+		} catch (EOFException | SocketException e) {
+			// un client a été fermé sans se déconnecter
 			ServerMultithreaded.removeClientConnected(this);
 			return; // exit the thread
 		} catch (Exception e) {
