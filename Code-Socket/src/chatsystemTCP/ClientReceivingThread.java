@@ -5,27 +5,46 @@ import java.net.*;
 import chatsystemTCP.Message;
 import chatsystemIHM.Window;
 
+/**
+ * ClientReceivingThread est la classe dédiée à la réception
+ * des messages depuis le serveur.
+ * 
+ * @author Killian OECHSLIN
+ * @author Thomas MIGNOT
+ */
 public class ClientReceivingThread extends Thread {
 
-	// Attribut du thread client de réception
-	private ObjectInputStream  socIn;
+	// ----- Attribut du thread client de réception -----
+
+	/**
+	 * Stream qui permet de recevoir des objets (Message) depuis le serveur.
+	 */
+	private ObjectInputStream socIn;
+
+	/**
+	 * La fenêtre gérant l'affichage.
+	 */
 	private Window window;
 	
+	// ----- Méthodes -----
+
 	/**
-	* constructor
-	* @param in the input object stream
-  	**/
+	 * Constructeur : Récupère le stream d'écoute et la fenêtre et 
+	 * lance le thread.
+	 * 
+	 * @param in Stream d'écoute
+	 * @param window Fenêtre gérant l'affichage
+	 */
 	ClientReceivingThread(ObjectInputStream in, Window window) {
 		this.socIn = in;
 		this.window = window;
 		this.start();
 	}
-
+	  
 	/**
-	* run method
-	* Read the object stream, wait for a Message sent by the server
-	* and write it on the console
-  	**/
+	 * Méthode run du thread : Lit le stream d'objet et attend la réception d'un message. 
+	 * Affiche ensuite le message dans la fenêtre du chat.
+	 */
 	public void run() {
 		try{
 			while(true){
@@ -47,7 +66,3 @@ public class ClientReceivingThread extends Thread {
 		}
 	}
 }
-
-
-
-  

@@ -1,1 +1,0 @@
-typeSearchIndex = [{"l":"All Classes","u":"allclasses-index.html"},{"p":"chatsystemTCP","l":"Client"},{"p":"chatsystemTCP","l":"ClientReceivingThread"},{"p":"chatsystemTCP","l":"ClientSendingThread"},{"p":"chatsystemTCP","l":"ClientThread"},{"p":"chatsystemTCP","l":"Message"},{"p":"chatsystemTCP","l":"ServerMultithreaded"}];updateSearchResults();

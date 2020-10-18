@@ -2,19 +2,40 @@ package chatsystemTCP;
 
 import java.io.Serializable;
 
+/**
+ * Message est la classe qui représente un message échangé entre le 
+ * serveur et un client.
+ * 
+ * @author Killian OECHSLIN
+ * @author Thomas MIGNOT
+ */
 public class Message implements Serializable {
 
-    // Attributs de Message
-    private String pseudo;
-    private String content;
-    private int type; // type = 1 => message d'information ; type = 2 => message normal
+    // ----- Attributs de Message -----
 
     /**
-	* constructor
-    * @param content the content of the message
-    * @param pseudo the pseudo of the user
-    * @param type the type of the message
-	**/
+     * Pseudo de l'envoyeur.
+     */
+    private String pseudo;
+
+    /**
+     * Contenu du message.
+     */
+    private String content;
+
+    /**
+     * Type du message : 1 = Message d'information ; 2 = Message normal
+     */
+    private int type;
+
+    // ----- Méthodes -----
+    
+    /**
+     * Constructeur.
+     * @param content Le contenu du message.
+     * @param pseudo Le pseudo de l'envoyeur.
+     * @param type Le type du message.
+     */
     public Message(String content, String pseudo, int type) {
         this.pseudo = pseudo;
         this.content = content;
@@ -22,24 +43,24 @@ public class Message implements Serializable {
     }
 
     /**
-	* getter
-	* @return the variable 'content'
+	* Getter.
+	* @return Le contenu du message.
 	**/
     public String getContent() {
         return this.content;
     }
 
     /**
-	* getter
-	* @return the variable 'pseudo'
+	* Getter.
+	* @return Le pseudo de l'envoyeur.
 	**/
     public String getPseudo() {
         return this.pseudo;
     }
 
     /**
-	* getter
-	* @return the variable 'type'
+	* Getter.
+	* @return Le type du message.
 	**/
     public int getType() {
         return this.type;

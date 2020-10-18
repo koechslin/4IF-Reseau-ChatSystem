@@ -6,40 +6,137 @@ import java.awt.event.*;
 import chatsystemTCP.Client;
 import chatsystemTCP.Message;
 
+/**
+ * Window est la classe qui représente la fenêtre du chat client. 
+ * C'est cette classe qui va gérer toute la partie affichage.
+ * 
+ * @author Killian OECHSLIN
+ * @author Thomas MIGNOT
+ */
 public class Window extends JFrame implements ActionListener {
 
-    // Variables utiles pour le positionnement et la taille des éléments
+    // ----- Variables utiles pour le positionnement et la taille des éléments -----
+
+    /**
+     * Variable utilisée pour positionner les éléments sur l'axe X.
+     */
     private int posX;
+
+    /**
+     * Variable utilisée pour positionner les éléments sur l'axe Y.
+     */
     private int posY;
+
+    /**
+     * Variable utilisée pour définir la largeur d'un élément.
+     */
     private int width;
+
+    /**
+     * Variable utilisée pour définir la hauteur d'un élément.
+     */
     private int height;
+
+    /**
+     * Représente les "insets" de la fenêtre sur l'axe X (inset gauche et droit).
+     */
     private int insetX;
+
+    /**
+     * Représente les "insets" de la fenêtre sur l'axe Y (inset haut et bas).
+     */
     private int insetY;
 
-    // Client du chat
+    /**
+     * L'objet Client gérant toute la partie connexion et envoie/réception des messages.
+     */
     private Client client;
 
-    // Elements graphiques
+
+    // ----- Elements graphiques -----
+
+    /**
+     * Panel principal servant à contenir tous les éléments graphiques de la fenêtre.
+     */
     private JPanel mainContainer;
+
+    /**
+     * Panel secondaire servant à contenir les éléments graphiques purement liés au chat 
+     * (affichage des messages, écriture d'un message ...).
+     */
     private JPanel chatContainer;
+
+    /**
+     * Panel secondaire servant à contenir les éléments graphiques purement liés à la connexion 
+     * (Host, Port, Pseudo, bouton de connexion).
+     */
     private JPanel connectionContainer;
+
+    /**
+     * Label pour l'Host.
+     */
     private JLabel labelHost;
+
+    /**
+     * Label pour le Port.
+     */
     private JLabel labelPort;
+
+    /**
+     * Label pour le Pseudo.
+     */
     private JLabel labelPseudo;
+
+    /**
+     * Zone de texte pour saisir l'Host.
+     */
     private JTextField textfieldHost;
+
+    /**
+     * Zone de texte pour saisir le Port.
+     */
     private JTextField textfieldPort;
+
+    /**
+     * Zone de texte pour saisir le Pseudo.
+     */
     private JTextField textfieldPseudo;
+
+    /**
+     * Zone de texte pour afficher les messages reçus.
+     */
     private JTextArea chatTextArea;
+
+    /**
+     * Zone de texte pour saisir un message à envoyer.
+     */
     private JTextField msgTextArea;
+
+    /**
+     * ScrollPane permettant d'ajouter une scrollbar 
+     * sur la variable chatTextArea.
+     */
     private JScrollPane scrollChat;
+
+    /**
+     * Bouton permettant d'envoyer un message.
+     */
     private JButton sendButton;
+
+    /**
+     * Bouton permettant de se connecter.
+     */
     private JButton connectButton;
 
+    /**
+     * Constructeur : construit la fenêtre et place tous les éléments graphiques dedans. 
+     * Crée également l'objet Client pour gérer les échanges avec le serveur.
+     */
     Window() {
-        // Récupération de la taille de l'écran
+        // ----- Récupération de la taille de l'écran -----
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 
-        // Paramètres de la fenêtre
+        // ----- Paramètres de la fenêtre -----
         width = (int) (screenSize.getWidth() * 0.6);
         height = (int) (screenSize.getHeight() * 0.8);
         this.setSize(width, height);
@@ -52,7 +149,7 @@ public class Window extends JFrame implements ActionListener {
         insetX = this.getInsets().left + this.getInsets().right;
         insetY = this.getInsets().top + this.getInsets().bottom;
 
-        // Paramètres du panel conteneur principal
+        // ----- Paramètres du panel conteneur principal -----
         this.mainContainer = new JPanel();
         this.mainContainer.setLayout(null);
         width = this.getWidth() - insetX;
@@ -60,9 +157,9 @@ public class Window extends JFrame implements ActionListener {
         this.mainContainer.setBounds(0, 0, width, height);
         this.mainContainer.setBackground(Color.GRAY);
 
-        // Autres éléments
+        // ----- Autres éléments -----
 
-        // Conteneur du chat
+        // ----- Conteneur du chat -----
         this.chatContainer = new JPanel();
         this.chatContainer.setLayout(null);
         width = this.mainContainer.getWidth();
@@ -102,7 +199,7 @@ public class Window extends JFrame implements ActionListener {
         this.sendButton.setFocusable(false);
         this.sendButton.setEnabled(false);
 
-        // Conteneur des infos de connexion
+        // ----- Conteneur des infos de connexion -----
         
         this.connectionContainer = new JPanel();
         this.connectionContainer.setLayout(null);
@@ -115,7 +212,7 @@ public class Window extends JFrame implements ActionListener {
 
         int offsetXLabel = 10; // offset nécessaire pour que le texte des JLabel s'affiche en entier
         
-        // Label + TextField pour l'Host
+        // ----- Label + TextField pour l'Host -----
         this.labelHost = new JLabel("Host : ");
         width = (int) Math.ceil(this.labelHost.getPreferredSize().getWidth()) + offsetXLabel;
         height = (int) Math.ceil(this.labelHost.getPreferredSize().getHeight());
@@ -127,7 +224,7 @@ public class Window extends JFrame implements ActionListener {
         posX = (int) (this.connectionContainer.getWidth()/2) - 90;
         this.textfieldHost.setBounds(posX, posY, width, height);
 
-        // Label + TextField pour le Port
+        // ----- Label + TextField pour le Port -----
         this.labelPort = new JLabel("Port : ");
         width = (int) Math.ceil(this.labelPort.getPreferredSize().getWidth()) + offsetXLabel;
         height = (int) Math.ceil(this.labelPort.getPreferredSize().getHeight());
@@ -139,7 +236,7 @@ public class Window extends JFrame implements ActionListener {
         posX = (int) (this.connectionContainer.getWidth()/2) - 90;
         this.textfieldPort.setBounds(posX, posY, width, height);
 
-        // Label + TextField pour le Pseudo
+        // ----- Label + TextField pour le Pseudo -----
         this.labelPseudo = new JLabel("Pseudo : ");
         width = (int) Math.ceil(this.labelPseudo.getPreferredSize().getWidth()) + offsetXLabel;
         height = (int) Math.ceil(this.labelPseudo.getPreferredSize().getHeight());
@@ -160,7 +257,7 @@ public class Window extends JFrame implements ActionListener {
         this.connectButton.addActionListener(this);
         this.connectButton.setFocusable(false);
 
-        // Ajout des éléments
+        // ----- Ajout des éléments -----
         this.chatContainer.add(this.scrollChat);
         this.chatContainer.add(this.msgTextArea);
         this.chatContainer.add(this.sendButton);
@@ -179,10 +276,16 @@ public class Window extends JFrame implements ActionListener {
         this.add(this.mainContainer);
         this.repaint(); // Repaint la fenêtre pour afficher les éléments
 
-        // Création du client
+        // ----- Création du client -----
         this.client = new Client();
     }
 
+    /**
+     * Méthode interceptant les événements de type ActionEvent (déclenchés par les boutons).
+     * Cette méthode permet notamment de se connecter au serveur ou d'envoyer un message.
+     * 
+     * @param e l'événement intercepté
+     */
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == this.sendButton) {
             String content = this.msgTextArea.getText();
@@ -241,6 +344,11 @@ public class Window extends JFrame implements ActionListener {
         }
     }
 
+    /**
+     * Méthode permettant d'afficher dans la fenêtre un message reçu.
+     * 
+     * @param msg Le message reçu
+     */
     public void receiveMsg(Message msg) {
         if (msg.getType() == 1) {
             // Message de type information

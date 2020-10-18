@@ -3,18 +3,42 @@ package chatsystemUDP;
 import java.io.*;
 import java.net.*;
 
+/**
+ * ReceivingThread représente le thread d'écoute du client. Il s'occupe 
+ * de recevoir les messages et de les afficher.
+ * 
+ * @author Killian OECHSLIN
+ * @author Thomas MIGNOT
+ */
 public class ReceivingThread extends Thread {
 
-	// Attributs du thread client de réception
+	// ----- Attributs du thread client de réception -----
+	
+	/**
+	 * Adresse du groupe.
+	 */
 	InetAddress groupIP;
-	int port;
-	MulticastSocket socket;
-	boolean historyOk; // Booléen qui permet de savoir si on a reçu l'historique
 
 	/**
-    * interrupt method
-    * Leave group and close the socket
-	**/
+	 * Numéro de port du groupe.
+	 */
+	int port;
+
+	/**
+	 * Socket permettant de recevoir les messages du groupe.
+	 */
+	MulticastSocket socket;
+
+	/**
+	 * Booléen qui permet de savoir si le client a reçu l'historique.
+	 */
+	boolean historyOk;
+
+	// ----- Méthodes -----
+
+	/**
+	 * Méthode interrupt du thread : quitte le groupe et ferme la socket.
+	 */
 	@Override
 	public void interrupt() {
 		super.interrupt();
@@ -25,12 +49,12 @@ public class ReceivingThread extends Thread {
 		}
 		this.socket.close();
 	}
-	
+
 	/**
-	* constructor
-	* @param groupIP the virtual multicast IP address 
-	* @param port the port number of the group
-	**/
+	 * Constructeur : crée la socket et rejoint le groupe.
+	 * @param groupIP L'adresse IP virtuelle de multicast (adresse du groupe).
+	 * @param port Le numéro de port du groupe.
+	 */
 	ReceivingThread(InetAddress groupIP, int port) {
 		this.groupIP = groupIP;
 		this.port = port;
@@ -43,12 +67,11 @@ public class ReceivingThread extends Thread {
 			System.out.println("Error in ReceivingThread constructor : " + e);
 		}
 	}
-
+	  
 	/**
-	* run method
-	* Wait for a message in the multicastSocket
-	* and write it on the console
-  	**/
+	 * Méthode run du thread : attend la réception d'un message depuis le groupe 
+	 * puis l'affiche sur la console.
+	 */
 	public void run() {
 		while(true) {
 			byte[] buf = new byte[1024];
@@ -62,13 +85,13 @@ public class ReceivingThread extends Thread {
 				msg = msg.substring(0, msg.length()-1);
 
 				if(typeMessage.equals("1") && historyOk == true) {
-					//message normal reçu
+					// message normal reçu
 					System.out.println(msg);
 				}
 
-				if(typeMessage.equals("3") && historyOk == false){
+				if(typeMessage.equals("3") && historyOk == false) {
 					// hitorique reçu
-					if(!msg.equals("")){
+					if(!msg.equals("")) {
 						System.out.println(msg);
 					}
 					historyOk = true;
@@ -85,7 +108,3 @@ public class ReceivingThread extends Thread {
 		}	
 	}
 }
-
-
-
-  

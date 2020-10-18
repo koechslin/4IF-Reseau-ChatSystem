@@ -2,30 +2,64 @@ package chatsystemTCP;
 
 import java.io.*;
 import java.net.*;
-
 import java.util.List;
 import java.util.Scanner;
 import java.util.ArrayList;
 
-public  class ServerMultithreaded {
+/**
+ * ServerMultithreaded est la classe qui représente le serveur. C'est 
+ * elle qui gère la connexion avec les clients, et l'envoi et la  réception 
+ * des messages.
+ * 
+ * @author Killian OECHSLIN
+ * @author Thomas MIGNOT
+ */
+public class ServerMultithreaded {
 
-    // Variables globales de ServerMultithreaded
+    // ----- Variables globales de ServerMultithreaded ------
+	
+	/**
+	 * Socket d'écoute pour que les clients puissent se connecter.
+	 */
 	static ServerSocket listenSocket;
-	static List<ClientThread> clientsConnected;
-	static List<Message> historiqueMsg;
-	static File fMsg;
-	static FileWriter fWriter;
-
-	// Méthodes
 
 	/**
-	 * main method
+	 * Liste des clients connectés.
+	 */
+	static List<ClientThread> clientsConnected;
+
+	/**
+	 * Historique des messages envoyés.
+	 */
+	static List<Message> historiqueMsg;
+
+	/**
+	 * Fichier dans lequel est stocké l'historique des messages.
+	 */
+	static File fMsg;
+
+	/**
+	 * Variable permettant d'écrire dans le fichier de l'historique.
+	 */
+	static FileWriter fWriter;
+
+	// ----- Méthodes -----
+
+	/**
+	 *  method
 	* Launch the server, open a listen socket 
 	* and launch the ClientThread when a client 
 	* connects to the server
 	* @param Server port
 	* @param Messages file
 	**/
+
+	/**
+	 * Méthode main : Lance le serveur et ouvre la socket d'écoute. 
+	 * Lorsqu'un client se connnecte, crée un objet ClientThread associé 
+	 * au client et lui envoie l'historique des messages.
+	 * @param args Contient en premier le port du serveur et en deuxième le fichier de l'historique des messages.
+	 */
     public static void main(String args[]){        
   		if (args.length != 2) {
         	System.out.println("Usage: java ServerMultithreaded <Server port> <Messages file>");
@@ -35,7 +69,7 @@ public  class ServerMultithreaded {
 		fMsg = new File(args[1]);
 		try {
 			if(fMsg.exists()) {
-				// lire le fichier
+				// lit le fichier
 				Scanner fReader = new Scanner(fMsg);
 				while(fReader.hasNext()) {
 					String line = fReader.nextLine();
@@ -46,6 +80,7 @@ public  class ServerMultithreaded {
 				fReader.close();
 			}
 			else {
+				// crée le fichier
 				fMsg.createNewFile();
 			}
 			fWriter = new FileWriter(fMsg.getAbsolutePath(), true);
@@ -53,7 +88,7 @@ public  class ServerMultithreaded {
 			System.out.println("Error when opening/creating file : " + e);
 		}
 		try {
-			listenSocket = new ServerSocket(Integer.parseInt(args[0])); //port
+			listenSocket = new ServerSocket(Integer.parseInt(args[0])); // port
 			clientsConnected = new ArrayList<ClientThread>();
 			System.out.println("Server is ready !");
 
@@ -77,11 +112,10 @@ public  class ServerMultithreaded {
 	}
 
 	/**
-	* Send a message to all the clients and add it to the history
-	* @param msg the message to redistribute to all the clients
-	**/
+	 * Envoie un message à tous les clients et l'ajoute à l'historique.
+	 * @param msg Le message à envoyer.
+	 */
 	public static synchronized void sendMessagesToClient(Message msg) {
-
 		if(msg.getType() != 1) {
 			// message qui n'est pas de type information
 			historiqueMsg.add(msg);
@@ -108,17 +142,17 @@ public  class ServerMultithreaded {
 	}
 
 	/**
-	* Add a new ClientThread to the list of clients connected
-	* @param ct the ClientThread to add
-	**/
+	 * Ajoute un nouveau ClientThread aux clients connectés.
+	 * @param ct Le ClientThread à ajouter.
+	 */
 	public static synchronized void addClientConnected(ClientThread ct) {
 		clientsConnected.add(ct);
 	}
 
 	/**
-	* Remove a disconnected ClientThread from the list of clients connected
-	* @param ct the ClientThread to remove
-	**/
+	 * Supprime un ClientThread des clients connectés.
+	 * @param ct Le ClientThread a supprimer
+	 */
 	public static synchronized void removeClientConnected(ClientThread ct) {
 		clientsConnected.remove(ct);
 	}
